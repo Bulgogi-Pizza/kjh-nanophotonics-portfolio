@@ -11,7 +11,8 @@ def publications() -> rx.Component:
             rx.vstack(
                 rx.heading(pub.title, size="5"),
                 rx.text(pub.authors, font_style="italic"),
-                rx.text(f"{pub.journal}, {pub.year}"),
+                rx.text(
+                    f"{pub.journal}, {pub.publication_date.strftime('%B %Y')}"),
                 rx.link("DOI Link", href=f"https://doi.org/{pub.doi}", is_external=True),
                 spacing="2",
                 align_items="start",

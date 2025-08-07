@@ -8,12 +8,24 @@ def add_publication_form() -> rx.Component:
     return main_layout(
         rx.vstack(
             rx.heading("Add New Publication", size="7"),
+            rx.cond(
+                State.form_error_message != "",
+                rx.callout(
+                    State.form_error_message,
+                    icon="alert_triangle",
+                    color_scheme="red",
+                    role="alert",
+                    width="100%",
+                ),
+            ),
             rx.form(
                 rx.vstack(
                     rx.input(placeholder="Title", on_change=State.set_form_title, width="100%"),
                     rx.input(placeholder="Authors (e.g., A, B, C)", on_change=State.set_form_authors, width="100%"),
                     rx.input(placeholder="Journal / Conference", on_change=State.set_form_journal, width="100%"),
-                    rx.input(placeholder="Year", type="number", on_change=State.set_form_year, width="100%"),
+                    rx.input(placeholder="Publication Date (YYYY-MM)",
+                             on_change=State.set_form_publication_date,
+                             width="100%"),
                     rx.input(placeholder="DOI (e.g., 10.1000/xyz)", on_change=State.set_form_doi, width="100%"),
                     rx.text_area(placeholder="Abstract", on_change=State.set_form_abstract, width="100%"),
                     rx.button("Add Publication", type="submit", width="100%"),

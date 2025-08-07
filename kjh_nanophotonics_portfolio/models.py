@@ -1,4 +1,5 @@
 from typing import Optional
+from datetime import date
 from sqlmodel import Field, SQLModel
 
 class Publication(SQLModel, table=True):
@@ -6,7 +7,7 @@ class Publication(SQLModel, table=True):
   title: str = Field(index=True)
   authors: str # 저자 목룍 (예: "Joohoon Kim, John Doe, Hane Smith")
   journal: str # 학회 또는 저널 이름
-  year: int
+  publication_date: date
 
   # 선택적 필드들
   volume: Optional[str] = None
