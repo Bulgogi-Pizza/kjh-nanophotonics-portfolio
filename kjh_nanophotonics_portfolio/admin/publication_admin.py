@@ -26,9 +26,17 @@ def add_publication_form() -> rx.Component:
                     rx.input(placeholder="Publication Date (YYYY-MM)",
                              on_change=State.set_form_publication_date,
                              width="100%"),
-                    rx.select(
-                        State.research_areas,
-                        placeholder="Select Research Area",
+                    rx.select.root(
+                        rx.select.trigger(placeholder="Select Research Area"),
+                        rx.select.content(
+                            rx.foreach(
+                                State.research_area_options,
+                                lambda option: rx.select.item(
+                                    option[0],
+                                    value=option[1]
+                                )
+                            )
+                        ),
                         on_change=State.set_form_selected_research_area_id,
                         width="100%",
                     ),

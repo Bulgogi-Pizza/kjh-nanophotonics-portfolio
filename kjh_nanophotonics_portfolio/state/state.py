@@ -1,6 +1,6 @@
 import reflex as rx
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, List, Tuple
 from ..models import Publication, ResearchArea
 
 class State(rx.State):
@@ -15,7 +15,12 @@ class State(rx.State):
 
   research_areas: list[ResearchArea] = []
   form_research_area_name: str
-  form_selected_research_area_id: str  # 드롭다운에서 선택된 ID
+  form_selected_research_area_id: str
+
+  @rx.var
+  def research_area_options(self) -> List[Tuple[str, str]]:
+    """드롭다운에 사용할 (이름, ID) 튜플 리스트를 반환합니다."""
+    return [(area.name, str(area.id)) for area in self.research_areas]
 
   def get_all_publications(self, area_id: Optional[int] = None):
     with rx.session() as session:
