@@ -11,8 +11,14 @@ def publications() -> rx.Component:
             rx.vstack(
                 rx.heading(pub.title, size="5"),
                 rx.text(pub.authors, font_style="italic"),
-                rx.text(
-                    f"{pub.journal}, {pub.publication_date.strftime('%B %Y')}"),
+                rx.hstack(
+                    rx.text(f"{pub.journal},"),
+                    rx.text(
+                        pub.publication_date,
+                        format_time="MMMM YYYY"
+                    ),
+                    spacing="2",
+                ),
                 rx.link("DOI Link", href=f"https://doi.org/{pub.doi}", is_external=True),
                 spacing="2",
                 align_items="start",
@@ -26,5 +32,6 @@ def publications() -> rx.Component:
             rx.foreach(State.publications, publication_card),
             spacing="5",
             width="100%",
+            padding_top="10%"
         )
     )
