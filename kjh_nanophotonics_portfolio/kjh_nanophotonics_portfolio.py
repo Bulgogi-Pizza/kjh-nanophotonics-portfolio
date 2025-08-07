@@ -1,28 +1,11 @@
 import reflex as rx
-from kjh_nanophotonics_portfolio.layout import main_layout
 
+# 다른 파일에 정의된 페이지들을 Reflex가 인식할 수 있도록 임포트합니다.
+from .pages import index, publications
+from .admin import publication_admin
 
-class State(rx.State):
-    """The app state."""
-    pass
+# State도 명시적으로 임포트해주는 것이 좋습니다.
+from .state import state
 
-@rx.page(route="/", title="Home | Joohoon Kim POrtfolio")
-def index() -> rx.Component:
-    # Welcome Page (Index)
-    return main_layout(
-        rx.vstack(
-            rx.heading("Welcome to Joohoon Kim's Portfolio", size="8"),
-            rx.text(
-                """
-                my name is joohoon kim
-                I research for nanophotonics
-                """
-            ),
-            align="center",
-            spacing="7",
-            font_size="2em",
-            padding_top="10%",
-        )
-    )
-
+# 앱 객체 생성
 app = rx.App()
