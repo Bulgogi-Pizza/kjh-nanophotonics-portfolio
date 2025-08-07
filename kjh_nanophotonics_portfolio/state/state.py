@@ -1,6 +1,7 @@
 import reflex as rx
 from datetime import date, datetime
-from ..models import Publication  # 상위 폴더의 models.py에서 Publication 가져오기
+from typing import Optional
+from ..models import Publication, ResearchArea
 
 class State(rx.State):
   publications: list[Publication] = []
@@ -12,10 +13,21 @@ class State(rx.State):
   form_abstract: str
   form_error_message: str = ""
 
-  def get_all_publications(self):
+  research_areas: list[ResearchArea] = []
+  form_research_area_name: str
+  form_selected_research_area_id: str  # 드롭다운에서 선택된 ID
+
+  def get_all_publications(self, area_id: Optional[int] = None):
     with rx.session() as session:
-      self.publications = session.query(Publication).order_by(
-        Publication.publication_date.desc()).all()
+      query = session.query(Publication).order_by(
+        Publication.publication_date.desc())
+      if area_id:
+        query = query.filter(Publication.research_area_id == area_id)
+      self.publications = query.all()
+
+  def load_publications_page(self):
+    self.get_all_research_areas()
+    self.get_all_publications()
 
   def add_publication(self):
     self.form_error_message = ""
@@ -34,8 +46,20 @@ class State(rx.State):
           publication_date=pub_date,
           doi=self.form_doi,
           abstract=self.form_abstract,
+          research_area_id=int(self.form_selected_research_area_id) if self.form_selected_research_area_id else None
       )
       session.add(new_publication)
       session.commit()
 
     self.get_all_publications()
+
+  def get_all_research_areas(self):
+    with rx.session() as session:
+      self.research_areas = session.query(ResearchArea).all()
+
+  def add_research_area(self):
+    with rx.session() as session:
+      new_area = ResearchArea(name=self.form_research_area_name)
+      session.add(new_area)
+      session.commit()
+    self.get_all_research_areas()

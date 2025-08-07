@@ -26,6 +26,12 @@ def add_publication_form() -> rx.Component:
                     rx.input(placeholder="Publication Date (YYYY-MM)",
                              on_change=State.set_form_publication_date,
                              width="100%"),
+                    rx.select(
+                        State.research_areas,
+                        placeholder="Select Research Area",
+                        on_change=State.set_form_selected_research_area_id,
+                        width="100%",
+                    ),
                     rx.input(placeholder="DOI (e.g., 10.1000/xyz)", on_change=State.set_form_doi, width="100%"),
                     rx.text_area(placeholder="Abstract", on_change=State.set_form_abstract, width="100%"),
                     rx.button("Add Publication", type="submit", width="100%"),
