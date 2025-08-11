@@ -1,0 +1,14 @@
+.git
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+.venv
+.env
+portfolio-env/
+.states/
+.web/
+node_modules/
+alembic/versions/__pycache__/
+dist
