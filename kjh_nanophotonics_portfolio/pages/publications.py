@@ -1,9 +1,20 @@
+from typing import Callable, cast
+
 import reflex as rx
 
 from ..layout import main_layout
 from ..models import Publication
 from ..state.state import State
 
+
+def _area_filter_handler(area_id: int) -> Callable[[], None]:
+    """버튼 on_click에 넘길 제로-인자 콜백 생성기.
+
+    Reflex 런타임이 State 인스턴스를 바인딩하지만, mypy는 이를 모름.
+    호출 지점만 예외 처리해 정적 타입 검사를 통과시킨다.
+    """
+    handler = cast("Callable[[int], None]", State.filter_publications_by_area)
+    return lambda: handler(area_id)
 
 @rx.page(
     route="/publications",
@@ -20,8 +31,7 @@ def publications() -> rx.Component:
                 rx.text(pub.authors, font_style="italic"),
                 rx.hstack(
                     rx.text(f"{pub.journal},"),
-                    # 날짜 포맷팅은 문자열로 안전하게 표기
-                    rx.text(str(pub.publication_date)),
+                    rx.text(str(pub.publication_date)),  # 문자열로 안전하게 표기
                     spacing="2",
                 ),
                 rx.link(
@@ -44,17 +54,14 @@ def publications() -> rx.Component:
             rx.hstack(
                 rx.button(
                     "All",
-                    on_click=State.get_all_publications,  # 함수 호출 X, 참조만
+                    on_click=State.get_all_publications,  # 함수 참조만
                     size="2",
                 ),
                 rx.foreach(
                     State.research_areas,
                     lambda area: rx.button(
                         area.name,
-                        # 클릭 시 선택한 분야로 필터링하는 이벤트 호출
-                        on_click=lambda area_id=area.id: State.filter_publications_by_area(
-                            int(area_id)
-                        ),
+                        on_click=_area_filter_handler(int(area.id)),
                         size="2",
                     ),
                 ),
