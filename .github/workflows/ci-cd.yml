@@ -79,6 +79,8 @@ jobs:
       # (선택) 오래된 이미지 정리로 디스크 압박 방지
       - name: Prune old images (optional)
         run: docker image prune -af || true
+      - name: Validate Caddyfile
+        run: docker compose -p portfolio run --rm proxy caddy validate --config /etc/caddy/Caddyfile
 
       - name: Build & Up (Compose on Rocky server)
         run: |
@@ -91,7 +93,16 @@ jobs:
       - name: Health check
         run: |
           curl -fsS https://joohoonkim.kro.kr/ >/dev/null
-
+      - name: Health check (retry)
+        run: |
+          for i in {1..30}; do
+            if curl -fsS https://joohoonkim.kro.kr/ >/dev/null; then
+              echo "OK"; exit 0
+            fi
+            echo "waiting for proxy/web ($i/30) ..."
+            sleep 3
+          done
+          echo "timeout"; exit 1
       - name: Show logs on failure
         if: failure()
         run: docker compose -p portfolio logs --no-color
