@@ -17,9 +17,8 @@ RUN pip install --no-cache-dir -r /src/requirements.txt reflex
 COPY . /src
 
 # Reflex가 Next 기반 정적/SSR 프로젝트를 .web 폴더에 생성
-# --no-watch: CI/도커 빌드 환경에서 감시 비활성
 # 환경에 따라 export 옵션이 다를 수 있으니, 필요 시 rxconfig.py에 맞춰 조정
-RUN reflex export --no-watch
+RUN reflex export
 
 # ─────────────────────────────────────────────────────────────
 # Stage 2) Node builder: .web 프로젝트를 Next 프로덕션 빌드
