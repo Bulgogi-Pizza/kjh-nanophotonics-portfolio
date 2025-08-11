@@ -1,13 +1,13 @@
 from datetime import datetime
 from typing import Any, List, Optional, Tuple, cast
 
-import reflex as rx
 from sqlalchemy import desc
 from sqlmodel import Session, select
 
 from create_db import engine
 
 from ..models import Publication, ResearchArea
+from ..utils.rx_shim import rx
 
 
 class State(rx.State):

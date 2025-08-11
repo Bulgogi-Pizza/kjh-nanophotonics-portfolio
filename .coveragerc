@@ -1,0 +1,12 @@
+[run]
+omit =
+    tests/*
+    kjh_nanophotonics_portfolio/components/*
+    kjh_nanophotonics_portfolio/pages/*
+    kjh_nanophotonics_portfolio/layout.py
+    kjh_nanophotonics_portfolio/kjh_nanophotonics_portfolio.py
+    kjh_nanophotonics_portfolio/admin/publication_admin.py
+    rxconfig.py
+
+[report]
+show_missing = True
