@@ -71,6 +71,9 @@ jobs:
           DB_URL=${{ secrets.DB_URL }}
           JWT_SECRET=${{ secrets.JWT_SECRET }}
           REFLEX_ENV=prod
+          CADDY_EMAIL=${{ secrets.CADDY_EMAIL }}
+          ADMIN_USER=admin
+          ADMIN_HASH=${{ secrets.ADMIN_HASH }}
           EOF
 
       # (선택) 오래된 이미지 정리로 디스크 압박 방지
