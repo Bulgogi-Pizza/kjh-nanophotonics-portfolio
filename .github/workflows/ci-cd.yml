@@ -5,21 +5,33 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+# 동시 배포 충돌 방지
 concurrency:
   group: portfolio-deploy
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  lint_test:
+  # --- CI: 린트/타입체크/테스트(커버리지) ---
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # Python 설정 + 품질검사/테스트(커버리지 100% 기준은 예시)
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
       - name: Install deps
         run: |
@@ -33,57 +45,50 @@ jobs:
       - name: Type check (mypy)
         run: mypy .
 
-      - name: Test (cov=100)
-        run: pytest --maxfail=1 --disable-warnings --cov=. --cov-fail-under=100
+      - name: Test (coverage >= 100)
+        run: pytest --maxfail=1 --disable-warnings --cov=. --cov-report=term-missing --cov-fail-under=100
 
-  build:
-    needs: [lint_test]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build API (no push)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/fastapi/Dockerfile
-          tags: local/portfolio-api:latest
-          push: false
-
-      - name: Build WEB (no push)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/reflex/Dockerfile
-          tags: local/portfolio-web:latest
-          push: false
-
+  # --- Deploy: self-hosted 러너(Rocky)에서 compose로 재배포 ---
   deploy:
+    needs: ci
     if: github.ref == 'refs/heads/main'
-    needs: [build]
-    runs-on: [self-hosted, portfolio-prod]   # ← 러너 레이블과 일치
+    runs-on: [ self-hosted, portfolio-prod ]   # ← 러너 등록 시 준 레이블과 동일해야 함
     environment:
       name: production
       url: https://joohoonkim.kro.kr
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create env file
+      # .env.prod를 운영 비밀값으로 생성 (레포에 커밋하지 않음)
+      - name: Create .env.prod from secrets
         run: |
           cat > .env.prod <<'EOF'
+          DB_NAME=${{ secrets.DB_NAME }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_HOST=db
+          DB_PORT=5432
           DB_URL=${{ secrets.DB_URL }}
           JWT_SECRET=${{ secrets.JWT_SECRET }}
           REFLEX_ENV=prod
           EOF
 
-      - name: Compose build & up (Rocky 서버에서 수행)
+      # (선택) 오래된 이미지 정리로 디스크 압박 방지
+      - name: Prune old images (optional)
+        run: docker image prune -af || true
+
+      - name: Build & Up (Compose on Rocky server)
         run: |
           docker compose -p portfolio build
           docker compose -p portfolio up -d --remove-orphans
 
+      - name: Warm-up
+        run: sleep 10
+
       - name: Health check
         run: |
-          curl -fsS https://joohoonkim.kro.kr/ || (docker compose logs --no-color && false)
+          curl -fsS https://joohoonkim.kro.kr/ >/dev/null
+
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose -p portfolio logs --no-color
