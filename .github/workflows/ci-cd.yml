@@ -84,9 +84,9 @@ jobs:
 
       - name: Build & Up (Compose on Rocky server)
         run: |
-          docker compose -p portfolio build
-          docker compose -p portfolio up -d --remove-orphans
-
+          docker compose --env-file .env.prod -p portfolio build
+          docker compose --env-file .env.prod -p portfolio up -d --remove-orphans
+          
       - name: Warm-up
         run: sleep 10
 
