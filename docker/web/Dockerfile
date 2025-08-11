@@ -32,12 +32,13 @@ WORKDIR /app
 # Reflex가 생성한 .web 복사
 COPY --from=reflex-builder /src/.web /app
 
-# 🔧 lock 파일이 있으면 npm ci, 없으면 npm install로 잠금 생성 후 빌드
-RUN if [ -f package-lock.json ]; then \
-      npm ci --no-audit --no-fund; \
-    else \
-      npm install --no-audit --no-fund; \
-    fi \
+# 1) package.json에 build/start 스크립트가 없으면 주입
+# 2) Next/React를 호환 가능한 버전으로 고정 (Next 14.x + React 18.x)
+# 3) lock 파일이 있으면 npm ci, 없으면 npm install
+# 4) 빌드 실행
+RUN node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json','utf8'));p.scripts=p.scripts||{};if(!p.scripts.build)p.scripts.build='next build';if(!p.scripts.start)p.scripts.start='next start -p 3000';fs.writeFileSync('package.json',JSON.stringify(p,null,2));" \
+ && npm pkg set "dependencies.next=14.2.10" "dependencies.react=18.3.1" "dependencies.react-dom=18.3.1" \
+ && if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi \
  && npm run build
 
 # ─────────────────────────────────────────────────────────────
