@@ -4,6 +4,7 @@ import pytest
 from sqlmodel import Session, SQLModel, create_engine
 
 os.environ.setdefault("RX_SHIM_FORCE_STUB", "1")  # reflex 스텁 강제 (테스트 전용)
+os.environ.setdefault("DB_URL", "sqlite://")
 
 @pytest.fixture(scope="function")   # ← session → function
 def test_engine():
