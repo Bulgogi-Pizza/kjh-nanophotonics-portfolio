@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, cast
 
 import reflex as rx
 from sqlalchemy import desc
@@ -63,8 +63,9 @@ class State(rx.State):
                 selected_id = int(self.form_selected_research_area_id)
                 q = q.where(Publication.research_area_id == selected_id)
 
-            q = q.order_by(desc(Publication.publication_date))
-            self.publications = session.exec(q).all()
+            col = cast(Any, Publication.publication_date)
+            q = q.order_by(desc(col))
+            self.publications = list(session.exec(q).all())
 
     # =========================
     # 페이지 로드
@@ -72,7 +73,7 @@ class State(rx.State):
     async def load_publications_page(self) -> None:
         """연구 분야/출판물 목록 초기 로드."""
         with Session(engine) as session:
-            self.research_areas = session.exec(select(ResearchArea)).all()
+            self.research_areas = list(session.exec(select(ResearchArea)).all())
         self._refresh_publications()
 
     @rx.var
@@ -133,7 +134,7 @@ class State(rx.State):
     # =========================
     def get_all_research_areas(self) -> None:
         with Session(engine) as session:
-            self.research_areas = session.exec(select(ResearchArea)).all()
+            self.research_areas = list(session.exec(select(ResearchArea)).all())
 
     def add_research_area(self, form_data: Optional[dict] = None) -> None:
         name = self.form_research_area_name.strip()
