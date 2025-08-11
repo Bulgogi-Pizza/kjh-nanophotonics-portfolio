@@ -1,0 +1,40 @@
+{
+  email {$CADDY_EMAIL}
+  servers {
+    trusted_proxies private_ranges
+  }
+}
+
+joohoonkim.kro.kr {
+  encode zstd gzip
+
+  # API 라우팅
+  @api path /api/*
+  reverse_proxy @api api:8000
+
+  # 그 외는 리액트/Reflex 프론트
+  reverse_proxy web:3000
+
+  # 보안 헤더
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    X-Content-Type-Options "nosniff"
+    X-Frame-Options "DENY"
+    Referrer-Policy "strict-origin-when-cross-origin"
+    # Reflex 개발 중엔 style-src 'unsafe-inline'이 필요할 수 있어요.
+    Content-Security-Policy "default-src 'self'; img-src 'self' data: https:; script-src 'self'; style-src 'self' 'unsafe-inline'"
+  }
+
+  # 정식 인증 전 /admin 임시 보호 (Basic Auth)
+  route /admin* {
+    basicauth {
+      {$ADMIN_USER} {$ADMIN_HASH}
+    }
+    reverse_proxy api:8000
+  }
+
+  # 에러 응답
+  handle_errors {
+    respond "{http.error.status_code} {http.error.status_text}" {http.error.status_code}
+  }
+}
