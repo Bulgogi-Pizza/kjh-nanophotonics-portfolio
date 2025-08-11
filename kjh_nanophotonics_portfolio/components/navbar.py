@@ -1,6 +1,19 @@
 import reflex as rx
 
 
+def color_mode_toggle() -> rx.Component:
+  return rx.button(
+    rx.cond(
+        rx.color_mode == "light",
+        "🌙 Dark",
+        "☀️ Light",
+    ),
+    on_click=rx.toggle_color_mode,
+    variant="soft",
+    size="2",
+    padding="0.5em 0.8em",
+  )
+
 def navbar() -> rx.Component:
   menu_items = [
     ("Home", "/"),
@@ -14,35 +27,38 @@ def navbar() -> rx.Component:
   ]
 
   return rx.box(
+    rx.hstack(
+      rx.heading("Joohoon Kim Portfolio", size="6"),
+      rx.spacer(),
       rx.hstack(
-          rx.heading("Joohoon Kim Portfolio", size="6"),
-          rx.spacer(),
-          rx.hstack(
-              *[
-                rx.link(
-                    name,
-                    href=url,
-                    padding="1em",
-                    _hover={"background_color": "#f0f0f0", "border_radius": "5px"},
-                )
-                for name, url in menu_items
-              ],
-              spacing="4",
-          ),
-          rx.spacer(),
-          rx.color_mode.button(),
+        *[
+          rx.link(
+            name,
+            href=url,
+            padding="1em",
+            _hover={
+              "background_color": "#f0f0f0",
+              "border_radius": "5px",
+            },
+          )
+          for name, url in menu_items
+        ],
+        spacing="4",
       ),
-      position="fixed",
-      top="0px",
-      left="0px",
-      right="0px",
-      z_index="1000",
-      padding="1em",
-      backdrop_filter="blur(10px)",
-      background_color="rgba(255, 255, 255, 0.8)",
-      border_bottom="1px solid #f0f0f0",
-      _dark={
-        "backgroud_color": "rgba(18, 18, 18, 0.8)",
-        "border_bottom": "1px solid #333",
-      },
+      rx.spacer(),
+      color_mode_toggle(),
+    ),
+    position="fixed",
+    top="0px",
+    left="0px",
+    right="0px",
+    z_index="1000",
+    padding="1em",
+    backdrop_filter="blur(10px)",
+    background_color="rgba(255, 255, 255, 0.8)",
+    border_bottom="1px solid #f0f0f0",
+    _dark={
+      "background_color": "rgba(18, 18, 18, 0.8)",
+      "border_bottom": "1px solid #333",
+    },
   )
