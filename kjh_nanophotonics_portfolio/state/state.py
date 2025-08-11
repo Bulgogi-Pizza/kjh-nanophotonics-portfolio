@@ -89,7 +89,7 @@ class State(rx.State):
         self.form_selected_research_area_id = ""
         self._refresh_publications()
 
-    def filter_publications_by_area(self, area_id: int) -> None:
+    def filter_publications_by_area(self, area_id: Any) -> None:
         """특정 연구 분야로 필터링."""
         self.form_selected_research_area_id = str(area_id)
         self._refresh_publications()

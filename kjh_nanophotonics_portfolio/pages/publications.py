@@ -61,7 +61,7 @@ def publications() -> rx.Component:
                     State.research_areas,
                     lambda area: rx.button(
                         area.name,
-                        on_click=_area_filter_handler(int(area.id)),
+                        on_click=_area_filter_handler(area.id),
                         size="2",
                     ),
                 ),
