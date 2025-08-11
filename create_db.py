@@ -1,13 +1,14 @@
+import os
+from typing import cast
+
+from dotenv import load_dotenv
 from sqlmodel import SQLModel, create_engine
 
-import rxconfig
-from kjh_nanophotonics_portfolio.models import Publication  # noqa: F401
-
-db_url = rxconfig.config.db_url
-if db_url is None:
+load_dotenv()
+DB_URL = os.getenv("DB_URL")
+if not DB_URL:
     raise ValueError("DB_URL is not configured.")
-
-engine = create_engine(db_url)
+engine = create_engine(cast(str, DB_URL))
 
 def init_db() -> None:
   print("Creating Database tables...")

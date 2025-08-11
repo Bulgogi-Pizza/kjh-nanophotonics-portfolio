@@ -5,7 +5,7 @@ import reflex as rx
 from sqlalchemy import desc
 from sqlmodel import Session, select
 
-import rxconfig
+from create_db import engine
 
 from ..models import Publication, ResearchArea
 
@@ -57,7 +57,7 @@ class State(rx.State):
     # =========================
     def _refresh_publications(self) -> None:
         """현재 선택된 연구 분야 기준으로 출판물 목록을 갱신."""
-        with Session(rxconfig.config.engine) as session:
+        with Session(engine) as session:
             q = select(Publication)
             if self.form_selected_research_area_id:
                 selected_id = int(self.form_selected_research_area_id)
@@ -71,7 +71,7 @@ class State(rx.State):
     # =========================
     async def load_publications_page(self) -> None:
         """연구 분야/출판물 목록 초기 로드."""
-        with Session(rxconfig.config.engine) as session:
+        with Session(engine) as session:
             self.research_areas = session.exec(select(ResearchArea)).all()
         self._refresh_publications()
 
@@ -109,7 +109,7 @@ class State(rx.State):
             )
             return
 
-        with Session(rxconfig.config.engine) as session:
+        with Session(engine) as session:
             new_publication = Publication(
                 title=self.form_title,
                 authors=self.form_authors,
@@ -132,14 +132,14 @@ class State(rx.State):
     # 연구 분야 목록/추가
     # =========================
     def get_all_research_areas(self) -> None:
-        with Session(rxconfig.config.engine) as session:
+        with Session(engine) as session:
             self.research_areas = session.exec(select(ResearchArea)).all()
 
     def add_research_area(self, form_data: Optional[dict] = None) -> None:
         name = self.form_research_area_name.strip()
         if not name:
             return
-        with Session(rxconfig.config.engine) as session:
+        with Session(engine) as session:
             session.add(ResearchArea(name=name))
             session.commit()
         self.get_all_research_areas()
