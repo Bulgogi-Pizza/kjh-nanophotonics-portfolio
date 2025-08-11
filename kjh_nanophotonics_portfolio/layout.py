@@ -1,5 +1,7 @@
 import reflex as rx
+
 from kjh_nanophotonics_portfolio.components.navbar import navbar
+
 
 def main_layout(child: rx.Component) -> rx.Component:
   """

@@ -1,7 +1,9 @@
 import reflex as rx
+
 from ..layout import main_layout
-from ..state.state import State
 from ..models import Publication
+from ..state.state import State
+
 
 @rx.page(route="/publications", title="Publications", on_load=State.load_publications_page)
 def publications() -> rx.Component:

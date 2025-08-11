@@ -1,7 +1,10 @@
-import reflex as rx
 from datetime import datetime
-from typing import Optional, List, Tuple
+from typing import List, Optional, Tuple
+
+import reflex as rx
+
 from ..models import Publication, ResearchArea
+
 
 class State(rx.State):
   publications: list[Publication] = []
@@ -51,7 +54,11 @@ class State(rx.State):
           publication_date=pub_date,
           doi=self.form_doi,
           abstract=self.form_abstract,
-          research_area_id=int(self.form_selected_research_area_id) if self.form_selected_research_area_id else None
+          research_area_id=(
+            int(self.form_selected_research_area_id)
+            if self.form_selected_research_area_id
+            else None
+          ),
       )
       session.add(new_publication)
       session.commit()

@@ -1,5 +1,7 @@
 import reflex as rx
+
 from ..layout import main_layout
+
 
 @rx.page(route="/", title="Home | My Portfolio")
 def index() -> rx.Component:

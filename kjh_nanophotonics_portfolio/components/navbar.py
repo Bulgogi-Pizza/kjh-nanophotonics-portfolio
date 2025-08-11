@@ -1,5 +1,6 @@
 import reflex as rx
 
+
 def navbar() -> rx.Component:
   menu_items = [
     ("Home", "/"),

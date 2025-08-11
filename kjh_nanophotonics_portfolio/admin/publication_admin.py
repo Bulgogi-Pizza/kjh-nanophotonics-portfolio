@@ -1,6 +1,8 @@
 import reflex as rx
+
 from ..layout import main_layout
 from ..state.state import State
+
 
 @rx.page(route="/admin/add-publication", title="Add Publication")
 def add_publication_form() -> rx.Component:
@@ -20,14 +22,30 @@ def add_publication_form() -> rx.Component:
             ),
             rx.form(
                 rx.vstack(
-                    rx.input(placeholder="Title", on_change=State.set_form_title, width="100%"),
-                    rx.input(placeholder="Authors (e.g., A, B, C)", on_change=State.set_form_authors, width="100%"),
-                    rx.input(placeholder="Journal / Conference", on_change=State.set_form_journal, width="100%"),
-                    rx.input(placeholder="Publication Date (YYYY-MM)",
-                             on_change=State.set_form_publication_date,
-                             width="100%"),
+                    rx.input(
+                        placeholder="Title",
+                        on_change=State.set_form_title,
+                        width="100%"
+                    ),
+                    rx.input(
+                        placeholder="Authors (e.g., A, B, C)",
+                        on_change=State.set_form_authors,
+                        width="100%"
+                    ),
+                    rx.input(
+                        placeholder="Journal / Conference",
+                        on_change=State.set_form_journal,
+                        width="100%"
+                    ),
+                    rx.input(
+                        placeholder="Publication Date (YYYY-MM)",
+                        on_change=State.set_form_publication_date,
+                        width="100%"
+                    ),
                     rx.select.root(
-                        rx.select.trigger(placeholder="Select Research Area"),
+                        rx.select.trigger(
+                            placeholder="Select Research Area"
+                        ),
                         rx.select.content(
                             rx.foreach(
                                 State.research_area_options,
@@ -40,9 +58,21 @@ def add_publication_form() -> rx.Component:
                         on_change=State.set_form_selected_research_area_id,
                         width="100%",
                     ),
-                    rx.input(placeholder="DOI (e.g., 10.1000/xyz)", on_change=State.set_form_doi, width="100%"),
-                    rx.text_area(placeholder="Abstract", on_change=State.set_form_abstract, width="100%"),
-                    rx.button("Add Publication", type="submit", width="100%"),
+                    rx.input(
+                        placeholder="DOI (e.g., 10.1000/xyz)",
+                        on_change=State.set_form_doi,
+                        width="100%"
+                    ),
+                    rx.text_area(
+                        placeholder="Abstract",
+                        on_change=State.set_form_abstract,
+                        width="100%"
+                    ),
+                    rx.button(
+                        "Add Publication",
+                        type="submit",
+                        width="100%"
+                    ),
                     spacing="4",
                 ),
                 on_submit=State.add_publication,

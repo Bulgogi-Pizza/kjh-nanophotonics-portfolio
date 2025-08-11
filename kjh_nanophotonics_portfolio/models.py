@@ -1,6 +1,7 @@
-from typing import Optional, List
 from datetime import date
-from sqlmodel import Field, SQLModel, Relationship
+from typing import List, Optional
+
+from sqlmodel import Field, Relationship, SQLModel
 
 
 class ResearchArea(SQLModel, table=True):
