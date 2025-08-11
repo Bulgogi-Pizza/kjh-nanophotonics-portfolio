@@ -17,6 +17,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt /src/requirements.txt
 RUN pip install --no-cache-dir -r /src/requirements.txt reflex
 
+ENV DB_URL=sqlite://
+
 # 앱 소스 복사
 COPY . /src
 
