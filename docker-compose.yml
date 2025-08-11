@@ -37,6 +37,9 @@ services:
       - .env.prod
     expose:
       - "8000"
+    depends_on:
+      db:
+        condition: service_healthy
     restart: unless-stopped
 
   db:
@@ -52,6 +55,12 @@ services:
       - pg_data:/var/lib/postgresql/data
     expose:
       - "5432"
+    healthcheck:
+      # $$로 이스케이프해야 compose가 호스트의 env로 치환하지 않음
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -h 127.0.0.1"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
     restart: unless-stopped
 
 volumes:

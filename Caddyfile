@@ -24,7 +24,7 @@ joohoonkim.kro.kr {
 
   # 정식 인증 전 /admin 임시 보호 (Basic Auth)
   route /admin* {
-    basicauth {
+    basic_auth {
       {$ADMIN_USER} {$ADMIN_HASH}
     }
     reverse_proxy api:8000
