@@ -51,5 +51,6 @@ def add_publication_form() -> rx.Component:
             width="100%",
             max_width="600px",
             margin="auto",
+            padding_top="10%"
         )
     )
