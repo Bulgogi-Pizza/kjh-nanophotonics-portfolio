@@ -1,5 +1,5 @@
 import reflex as rx
-from datetime import date, datetime
+from datetime import datetime
 from typing import Optional, List, Tuple
 from ..models import Publication, ResearchArea
 

@@ -1,6 +1,4 @@
 import reflex as rx
-from pygments.styles.dracula import background
-
 
 def navbar() -> rx.Component:
   menu_items = [

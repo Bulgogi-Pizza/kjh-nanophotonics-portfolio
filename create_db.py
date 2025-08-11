@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, create_engine
-from kjh_nanophotonics_portfolio.models import Publication
+from kjh_nanophotonics_portfolio.models import Publication # noqa: F401
 import rxconfig
 
 engine = create_engine(rxconfig.config.db_url)
