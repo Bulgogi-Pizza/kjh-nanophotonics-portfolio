@@ -1,10 +1,10 @@
-[tool.ruff]
 target-version = "py311"
+line-length = 100
 
-[tool.ruff.lint]
-select = ["E", "F", "I"]  # 기본 예시
+[lint]
+select = ["E", "F", "I"]  # PEP8, pyflakes, import sort
+# 필요하면 ignore 추가
 
-[tool.ruff.lint.per-file-ignores]
-# Reflex 라우트/상태 등록을 위해 import side-effect가 필요한 파일들
+[lint.per-file-ignores]
 "create_db.py" = ["F401"]
 "kjh_nanophotonics_portfolio/kjh_nanophotonics_portfolio.py" = ["F401"]
