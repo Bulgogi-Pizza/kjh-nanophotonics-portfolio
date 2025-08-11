@@ -1,8 +1,5 @@
 {
   email {$CADDY_EMAIL}
-  servers {
-    trusted_proxies private_ranges
-  }
 }
 
 joohoonkim.kro.kr {
