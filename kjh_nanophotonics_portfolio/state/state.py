@@ -6,6 +6,7 @@ from sqlalchemy import desc
 from sqlmodel import Session, select
 
 import rxconfig
+
 from ..models import Publication, ResearchArea
 
 
@@ -102,7 +103,10 @@ class State(rx.State):
         try:
             pub_date = datetime.strptime(self.form_publication_date, "%Y-%m").date()
         except ValueError:
-            self.form_error_message = "날짜 형식이 올바르지 않습니다 (YYYY-MM 형식으로 입력해주세요)."
+            self.form_error_message = (
+                "날짜 형식이 올바르지 않습니다.\n"
+                "예: YYYY-MM"
+            )
             return
 
         with Session(rxconfig.config.engine) as session:
