@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update && \
-    apt-get install -y unzip --no-install-recommends && \
+    apt-get install -y unzip curl --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
