@@ -6,7 +6,7 @@ from sqlmodel import Session, select
 
 from create_db import engine
 
-from ..models import Publication, ResearchArea
+from ..models import Publication, ResearchArea, Media
 from ..utils.rx_shim import rx
 
 
@@ -27,6 +27,14 @@ class State(rx.State):
     # ---- 페이지 상태 ----
     publications: List[Publication] = []
     research_areas: List[ResearchArea] = []
+
+    # Media 관련 폼/페이지 상태
+    form_media_title: str = ""
+    form_media_outlet: str = ""
+    form_media_date: str = ""  # "YYYY-MM"
+    form_media_url: str = ""
+    form_media_error_message: str = ""
+    media_items: List[Media] = []
 
     # =========================
     # 기본 세터 (mypy가 속성 확인 가능)
@@ -144,3 +152,41 @@ class State(rx.State):
             session.add(ResearchArea(name=name))
             session.commit()
         self.get_all_research_areas()
+
+    # Media 관련 이벤트 핸들러
+    def load_media_page(self):
+        """Media 페이지 로드 시 모든 미디어 항목을 가져옴."""
+        with Session(engine) as session:
+            col = cast(Any, Media.publication_date)
+            q = select(Media).order_by(desc(col))
+            self.media_items = list(session.exec(q).all())
+
+    def add_media(self, form_data: Optional[dict] = None):
+        """새 미디어 항목 등록."""
+        self.form_media_error_message = ""
+
+        # 날짜 형식 검증
+        try:
+            pub_date = datetime.strptime(self.form_media_date,
+                                         "%Y-%m").date()
+        except (ValueError, TypeError):
+            self.form_media_error_message = "날짜 형식이 올바르지 않습니다 (YYYY-MM)."
+            return
+
+        # URL 비어있는지 확인
+        if not self.form_media_url.strip():
+            self.form_media_error_message = "미디어 링크(URL)는 필수 항목입니다."
+            return
+
+        with Session(engine) as session:
+            new_media_item = Media(
+                title=self.form_media_title,
+                outlet=self.form_media_outlet,
+                publication_date=pub_date,
+                url=self.form_media_url,
+            )
+            session.add(new_media_item)
+            session.commit()
+
+        # 성공 시, 목록 새로고침
+        self.load_media_page()
