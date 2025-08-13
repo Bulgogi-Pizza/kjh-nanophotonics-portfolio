@@ -4,7 +4,7 @@ import pytest
 from sqlmodel import Session, SQLModel, create_engine
 
 os.environ.setdefault("RX_SHIM_FORCE_STUB", "1")  # reflex 스텁 강제 (테스트 전용)
-os.environ.setdefault("DB_URL", "sqlite://")
+os.environ.setdefault("DATABASE_URL", "sqlite://")
 
 @pytest.fixture(scope="function")   # ← session → function
 def test_engine():
@@ -18,7 +18,7 @@ def test_engine():
 def _patch_engine(monkeypatch: pytest.MonkeyPatch, test_engine):
     import create_db
     from kjh_nanophotonics_portfolio.state import state as state_mod
-    monkeypatch.setenv("DB_URL", "sqlite://")
+    monkeypatch.setenv("DATABASE_URL", "sqlite://")
     monkeypatch.setattr(create_db, "engine", test_engine, raising=False)
     monkeypatch.setattr(state_mod, "engine", test_engine, raising=False)
 
