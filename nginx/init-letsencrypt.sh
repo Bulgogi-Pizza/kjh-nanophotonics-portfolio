@@ -18,7 +18,7 @@ domains=($DOMAIN_NAME)
 rsa_key_size=4096
 data_path="./data/certbot"
 email="$CERTBOT_EMAIL"
-staging=1 # 테스트 시에는 1로 변경
+staging=0 # 테스트 시에는 1로 변경
 
 if [ -d "$data_path" ]; then
   read -p "Existing data found for $domains. Continue and replace existing certificate? (y/N) " decision
