@@ -16,7 +16,7 @@ echo "### CURRENTLY RUNNING: $CURRENT_COLOR"
 echo "### STARTING DEPLOYMENT FOR: $NEXT_COLOR"
 
 echo "### PREPARING NGINX for $NEXT_COLOR"
-UPSTREAM_CONFIG="set \$upstream app_${NEXT_COLOR}:3000;"
+UPSTREAM_CONFIG="set \$upstream app_${NEXT_COLOR}:3000"
 echo "$UPSTREAM_CONFIG" > ./nginx/conf.d/upstream.conf
 
 echo "### BUILDING AND STARTING app_${NEXT_COLOR}..."
