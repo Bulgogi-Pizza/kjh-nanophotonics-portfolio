@@ -30,7 +30,7 @@ jobs:
     - name: Set up Docker Compose
       run: |
         docker compose down
-        docker compose up --env-file .env.prod --build -d
+        docker compose --env-file .env.prod up  --build -d
         
     - name: Clean up old Docker images
       run: docker image prune -af
