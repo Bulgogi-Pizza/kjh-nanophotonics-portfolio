@@ -17,12 +17,10 @@ def color_mode_toggle() -> rx.Component:
 def navbar() -> rx.Component:
   menu_items = [
     ("Home", "/"),
-    ("Research", "/research"),
-    ("About Me", "/about"),
+    ("CV", "/cv"),
     ("Publications", "/publications"),
-    ("Media", "/media"),
-    ("Gallery", "/gallery"),
-    ("Notice", "/notice"),
+    ("Awards", "/awards"),
+    ("Conferences", "/conferences"),
     ("Contact", "/contact"),
   ]
 
