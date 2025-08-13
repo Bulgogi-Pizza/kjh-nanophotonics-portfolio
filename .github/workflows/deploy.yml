@@ -10,6 +10,14 @@ jobs:
     runs-on: self-hosted
     
     steps:
+    - name: Clean workspace before checkout
+      run: |
+        # 현재 디렉터리가 runner 작업 디렉터리인지 확인
+        if [ "$GITHUB_WORKSPACE" = "$(pwd)" ]; then
+          sudo rm -rf ./*
+          sudo rm -rf ./.??*
+        fi
+        
     - name: Checkout repository
       uses: actions/checkout@v4
 
