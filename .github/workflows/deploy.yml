@@ -22,6 +22,10 @@ jobs:
         echo "API_URL=${{ secrets.API_URL }}" >> .env.prod
         echo "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}" >> .env.prod
         echo "CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}" >> .env.prod
+        echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env.prod
+        echo "DB_USER=${{ secrets.DB_USER }}" >> .env.prod
+        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env.prod
+
 
     - name: Set up Docker Compose
       run: |
