@@ -1,10 +1,22 @@
 version: '3.8'
 
 services:
-  app:
+  app_blue:
     build: .
+    image: kjh-nanophotonics-portfolio-app:blue
+    container_name: app_blue
     restart: always
     # GitHub Actions가 생성한 .env.prod 파일의 변수를 컨테이너 내부 환경변수로 로드
+    env_file:
+      - .env.prod
+    networks:
+      - app-network
+
+  app_green:
+    build: .
+    image: kjh-nanophotonics-portfolio-app:green
+    container_name: app_green
+    restart: always
     env_file:
       - .env.prod
     networks:
@@ -39,8 +51,6 @@ services:
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     networks:
       - app-network
-    depends_on:
-      - app
 
   certbot:
     image: certbot/certbot
