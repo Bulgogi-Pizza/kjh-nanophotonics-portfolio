@@ -14,10 +14,16 @@ def media() -> rx.Component:
             rx.card(
                 rx.vstack(
                     rx.heading(item.title, size="5"),
-                    rx.text(
-                        f"{item.outlet} | {item.publication_date.strftime('%Y. %m.')}",
+                    rx.hstack(
+                        rx.text(f"{item.outlet} |"),
+                        rx.text(
+                            item.publication_date,
+                            format_time="YYYY. MM."  # frontend에서 날짜 형식 지정
+                        ),
+                        spacing="2",
                         color_scheme="gray",
                     ),
+
                     spacing="2",
                     align_items="start",
                     width="100%",
