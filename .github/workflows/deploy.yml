@@ -1,0 +1,29 @@
+name: Deploy to Production Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Create .env.prod file from GitHub Secrets
+      run: |
+        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env.prod
+        echo "API_URL=${{ secrets.API_URL }}" >> .env.prod
+        echo "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}" >> .env.prod
+        echo "CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}" >> .env.prod
+
+    - name: Set up Docker Compose
+      run: |
+        docker-compose down
+        docker-compose up --build -d
+        
+    - name: Clean up old Docker images
+      run: docker image prune -af
