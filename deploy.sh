@@ -15,16 +15,16 @@ fi
 echo "### CURRENTLY RUNNING: $CURRENT_COLOR"
 echo "### STARTING DEPLOYMENT FOR: $NEXT_COLOR"
 
-docker compose --env-file .env.prod up --build -d app_${NEXT_COLOR} nginx certbot
-
-echo "### WAITING FOR app_${NEXT_COLOR} to be health..."
-sleep 15
-# 임시로 15초 기다리는 방편, 추후에는 healthy API 호출하여 200 OK 응답 확인하기
-
-echo "### SWITCHING NGINX to $NEXT_COLOR"
+echo "### PREPARING NGINX for $NEXT_COLOR"
 UPSTREAM_CONFIG="set \$upstream app_${NEXT_COLOR}:3000;"
-echo "$UPSTREAM_CONFIG" | docker compose exec -T nginx sh -c 'cat > /etc/nginx/conf.d/upstream.conf'
-docker compose exec nginx nginx -s reload
+echo "$UPSTREAM_CONFIG" > ./nginx/conf.d/upstream.conf
+
+echo "### BUILDING AND STARTING app_${NEXT_COLOR}..."
+docker compose up --build -d app_${NEXT_COLOR} nginx certbot
+
+echo "### WAITING FOR app_${NEXT_COLOR} to be healthy..."
+sleep 15
+
 
 if [ ! -z "$RUNNING_CONTAINER" ]; then
     echo "### STOPPING old container: $RUNNING_CONTAINER"
