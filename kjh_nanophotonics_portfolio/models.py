@@ -35,3 +35,11 @@ class Publication(SQLModel, table=True):
   # 연구 분야 (나중에 별도 테이블로 분리할 수 있음)
   research_area: Optional[ResearchArea] = Relationship(
     back_populates="publications")
+
+class Media(SQLModel, table=True):
+  id: Optional[int] = Field(default=None, primary_key=True)
+  title: str = Field(index=True)
+  outlet: str
+  publication_date: date
+  url: str
+  image_url: Optional[str] = None
