@@ -15,7 +15,7 @@ fi
 echo "### CURRENTLY RUNNING: $CURRENT_COLOR"
 echo "### STARTING DEPLOYMENT FOR: $NEXT_COLOR"
 
-docker compose up --build -d app_${NEXT_COLOR} nginx certbot
+docker compose --env-file .env.prod up --build -d app_${NEXT_COLOR} nginx certbot
 
 echo "### WAITING FOR app_${NEXT_COLOR} to be health..."
 sleep 15
