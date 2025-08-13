@@ -6,7 +6,7 @@ from sqlmodel import Session, select
 
 from create_db import engine
 
-from ..models import Publication, ResearchArea, Media
+from ..models import Publication, ResearchArea, Media, CVContent
 from ..utils.rx_shim import rx
 
 
@@ -35,6 +35,10 @@ class State(rx.State):
     form_media_url: str = ""
     form_media_error_message: str = ""
     media_items: List[Media] = []
+
+    # CB 관련 상태 변수
+    cv_content: str = "" # 공개 페이지에 보여줄 마크다운 원본
+    cv_editor_content: str = "" # 관리자 에디터의 현재 텍스트
 
     # =========================
     # 기본 세터 (mypy가 속성 확인 가능)
@@ -190,3 +194,38 @@ class State(rx.State):
 
         # 성공 시, 목록 새로고침
         self.load_media_page()
+
+    # CV 관련 이벤트 핸들러 추가
+    def _get_or_create_cv(self, session: Session) -> CVContent:
+        """ID가 1인 CV 콘텐츠를 가져오거나, 없으면 새로 생성합니다."""
+        cv = session.get(CVContent, 1)
+        if not cv:
+            cv = CVContent(id=1, content="# CV\n\n이곳에 내용을 입력하세요.")
+            session.add(cv)
+            session.commit()
+            session.refresh(cv)
+        return cv
+
+    def load_cv_page(self):
+        """공개 CV 페이지 로드 시 내용을 불러옴."""
+        with Session(engine) as session:
+            cv = self._get_or_create_cv(session)
+            self.cv_content = cv.content
+
+    def load_cv_editor(self):
+        """관리자 CV 에디터 로드 시 내용을 불러옴."""
+        with Session(engine) as session:
+            cv = self._get_or_create_cv(session)
+            self.cv_editor_content = cv.content
+
+    def save_cv_content(self):
+        """관리자 페이지에서 CV 내용을 저장."""
+        with Session(engine) as session:
+            cv_to_update = self._get_or_create_cv(session)
+            cv_to_update.content = self.cv_editor_content
+            session.add(cv_to_update)
+            session.commit()
+        # 저장 후 공개 페이지 내용도 갱신 (선택사항)
+        self.cv_content = self.cv_editor_content
+        # 사용자에게 저장되었음을 알리는 토스트 메시지 (UI에 추가 필요)
+        return rx.toast.success("CV 내용이 저장되었습니다!")

@@ -1,3 +1,4 @@
+from sqlalchemy import Column, Text
 from datetime import date
 from typing import List, Optional
 
@@ -43,3 +44,7 @@ class Media(SQLModel, table=True):
   publication_date: date
   url: str
   image_url: Optional[str] = None
+
+class CVContent(SQLModel, table=True):
+  id: int = Field(default=1, primary_key=True)
+  content: str = Field(default="", sa_column=Column(Text))

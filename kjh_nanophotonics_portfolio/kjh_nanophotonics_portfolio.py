@@ -1,7 +1,7 @@
 import reflex as rx
 
-from .admin import publication_admin, media_admin
-from .pages import index, publications, media
+from .admin import publication_admin, media_admin, cv_admin
+from .pages import index, publications, media, cv
 
 from .state import state
 
