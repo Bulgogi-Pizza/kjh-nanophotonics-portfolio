@@ -13,7 +13,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Create .env.prod file from GitHub Secrets
+    - name: Create .env file from GitHub Secrets
       run: |
         echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
         echo "API_URL=${{ secrets.API_URL }}" >> .env

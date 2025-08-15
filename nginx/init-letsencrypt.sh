@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# .env.prod 파일이 없으면 에러를 내고 종료
-if [ ! -f ".env.prod" ]; then
-    echo "Error: .env.prod file not found. Please create it manually for the initial setup."
+# .env 파일이 없으면 에러를 내고 종료
+if [ ! -f ".env" ]; then
+    echo "Error: .env file not found. Please create it manually for the initial setup."
     exit 1
 fi
 
-# .env.prod 파일에서 변수들을 현재 셸 환경으로 로드
-export $(grep -v '^#' .env.prod | xargs)
+# .env 파일에서 변수들을 현재 셸 환경으로 로드
+export $(grep -v '^#' .env | xargs)
 
 if ! [ -x "$(command -v docker compose)" ]; then
   echo 'Error: docker compose is not installed.' >&2
