@@ -1,8 +1,7 @@
 import reflex as rx
 
 from ..layout import main_layout
-from ..state.state import State
-
+from ..state.media_state import MediaState as State
 
 @rx.page(route="/admin/add-media", title="Add Media")
 def add_media_form() -> rx.Component:

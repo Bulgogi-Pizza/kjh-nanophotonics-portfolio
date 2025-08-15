@@ -4,7 +4,7 @@ import reflex as rx
 
 from ..layout import main_layout
 from ..models import Publication
-from ..state.state import State
+from ..state.publication_state import PublicationState as State
 
 
 def _area_filter_handler(area_id: int) -> Callable[[], None]:

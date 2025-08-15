@@ -1,7 +1,7 @@
 import reflex as rx
 
 from ..layout import main_layout
-from ..state.state import State
+from ..state.cv_state import CVState as State
 
 @rx.page(route="/admin/edit-cv", title="Edit CV", on_load=State.load_cv_editor)
 def edit_cv_page() -> rx.Component:

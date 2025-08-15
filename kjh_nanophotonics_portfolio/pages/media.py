@@ -2,7 +2,7 @@ import reflex as rx
 
 from ..layout import main_layout
 from ..models import Media
-from ..state.state import State
+from ..state.media_state import MediaState as State
 
 
 @rx.page(route="/media", title="Media", on_load=State.load_media_page)

@@ -1,8 +1,7 @@
 import reflex as rx
 
 from ..layout import main_layout
-from ..state.state import State
-
+from ..state.publication_state import PublicationState as State
 
 @rx.page(route="/admin/add-publication", title="Add Publication")
 def add_publication_form() -> rx.Component:

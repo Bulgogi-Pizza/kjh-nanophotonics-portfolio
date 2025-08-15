@@ -1,7 +1,7 @@
 import reflex as rx
 
 from ..layout import main_layout
-from ..state.state import State
+from ..state.cv_state import CVState as State
 
 @rx.page(route="/cv", title="CV", on_load=State.load_cv_page)
 def cv_page() -> rx.Component:
