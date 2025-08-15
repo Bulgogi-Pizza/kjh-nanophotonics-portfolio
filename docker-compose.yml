@@ -1,33 +1,25 @@
-version: '3.8'
-
 services:
-  app_blue:
+  app:
     build: .
-    image: kjh-nanophotonics-portfolio-app:blue
-    container_name: app_blue
-    restart: always
-    # GitHub Actions가 생성한 .env.prod 파일의 변수를 컨테이너 내부 환경변수로 로드
-    env_file:
-      - .env.prod
-    networks:
-      - app-network
-
-  app_green:
-    build: .
-    image: kjh-nanophotonics-portfolio-app:green
-    container_name: app_green
+    image: kjh-nanophotonics-portfolio-app
     restart: always
     env_file:
       - .env.prod
     networks:
       - app-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      replicas: 2
 
   db:
     image: postgres
     ports:
       - "5432:5432"
-    expose:
-      - "5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     environment:
@@ -35,19 +27,19 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - PGDATA=/var/lib/postgresql/data/pgdata
+    networks:
+      - app-network
 
   nginx:
     image: nginx:1.21-alpine
     restart: always
     volumes:
-      # Nginx 설정을 담은 conf.d 폴더를 컨테이너에 마운트
       - ./nginx/conf.d:/etc/nginx/conf.d
       - /srv/portfolio/data/certbot/conf:/etc/letsencrypt
       - /srv/portfolio/data/certbot/www:/var/www/certbot
     ports:
       - "80:80"
       - "443:443"
-    # 12시간마다 인증서를 갱신하고 Nginx를 리로드하는 명령어
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     networks:
       - app-network

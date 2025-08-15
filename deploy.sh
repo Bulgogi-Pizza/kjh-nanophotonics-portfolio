@@ -1,37 +1,43 @@
 #!/bin/bash
-
 set -e
 
-RUNNING_CONTAINER=$(docker ps --filter "name=app_" --format "{{.Names}}")
+echo "### STARTING ROLLING UPDATE DEPLOYMENT"
 
-if [ "$RUNNING_CONTAINER" == "app_blue" ]; then
-  CURRENT_COLOR="blue"
-  NEXT_COLOR="green"
-else
-  CURRENT_COLOR="green"
-  NEXT_COLOR="blue"
-fi
+# 1. 새 버전의 Docker 이미지 빌드
+docker compose build app
 
-echo "### CURRENTLY RUNNING: $CURRENT_COLOR"
-echo "### STARTING DEPLOYMENT FOR: $NEXT_COLOR"
+# 2. 현재 실행 중인 app 컨테이너들의 ID 목록 가져오기
+RUNNING_CONTAINERS=$(docker compose ps -q app)
 
-echo "### PREPARING NGINX for $NEXT_COLOR"
-UPSTREAM_CONFIG="upstream reflex_app { server app_${NEXT_COLOR}:3000; }"
-echo "$UPSTREAM_CONFIG" > ./nginx/conf.d/upstream.conf
+# 3. 각 컨테이너를 순회하며 하나씩 업데이트
+for CONTAINER_ID in $RUNNING_CONTAINERS; do
+  CONTAINER_NAME=$(docker inspect --format='{{.Name}}' $CONTAINER_ID | sed 's/^\///')
+  echo "### UPDATING CONTAINER: $CONTAINER_NAME"
 
-echo "### BUILDING AND STARTING app_${NEXT_COLOR}..."
-docker compose up --build -d app_${NEXT_COLOR} nginx certbot
+  # 3-1. Nginx 로드밸런싱 그룹에서 현재 컨테이너를 'down'으로 표시하여 트래픽 제외
+  echo "### EXCLUDING $CONTAINER_NAME from load balancer..."
+  UPSTREAM_CONFIG=$(docker compose ps -q app | awk '{print "server " $1 ":3000 " ($1 == "'$CONTAINER_ID'" ? "down" : "") ";"}')
+  echo "upstream reflex_app { ${UPSTREAM_CONFIG} }" > ./nginx/conf.d/upstream.conf
+  docker compose exec nginx nginx -s reload
+  sleep 5 # 트래픽이 완전히 빠질 때까지 잠시 대기
 
-echo "### WAITING FOR app_${NEXT_COLOR} to be healthy..."
-sleep 15
+  # 3-2. 새 이미지로 컨테이너 재생성 (업데이트)
+  echo "### RECREATING $CONTAINER_NAME with new image..."
+  docker compose up -d --no-deps --force-recreate --no-build $CONTAINER_NAME
 
+  # 3-3. 업데이트된 컨테이너가 healthy 상태가 될 때까지 헬스체크
+  echo "### WAITING FOR $CONTAINER_NAME to be healthy..."
+  timeout 120s bash -c \
+    'until docker inspect --format="{{.State.Health.Status}}" '"$CONTAINER_NAME"' | grep -q "healthy"; do \
+      sleep 5; \
+    done'
+  echo "### $CONTAINER_NAME is healthy!"
 
-if [ ! -z "$RUNNING_CONTAINER" ]; then
-    echo "### STOPPING old container: $RUNNING_CONTAINER"
-    docker compose stop $RUNNING_CONTAINER
-    docker compose rm -f $RUNNING_CONTAINER
-else
-    echo "### NO old container to stop."
-fi
+  # 3-4. Nginx 로드밸런싱 그룹에 컨테이너 다시 포함
+  echo "### INCLUDING $CONTAINER_NAME back into load balancer..."
+  UPSTREAM_CONFIG=$(docker compose ps -q app | awk '{print "server " $1 ":3000;"}')
+  echo "upstream reflex_app { ${UPSTREAM_CONFIG} }" > ./nginx/conf.d/upstream.conf
+  docker compose exec nginx nginx -s reload
+done
 
-echo "### DEPLOYMENT COMPLETED: $NEXT_COLOR is now live."
+echo "### ROLLING UPDATE DEPLOYMENT COMPLETED"
