@@ -15,13 +15,13 @@ jobs:
 
     - name: Create .env.prod file from GitHub Secrets
       run: |
-        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env.prod
-        echo "API_URL=${{ secrets.API_URL }}" >> .env.prod
-        echo "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}" >> .env.prod
-        echo "CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}" >> .env.prod
-        echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env.prod
-        echo "DB_USER=${{ secrets.DB_USER }}" >> .env.prod
-        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env.prod
+        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
+        echo "API_URL=${{ secrets.API_URL }}" >> .env
+        echo "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}" >> .env
+        echo "CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}" >> .env
+        echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+        echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
 
     - name: Run Zero-Downtime Deployment Script
       run: bash ./deploy.sh
