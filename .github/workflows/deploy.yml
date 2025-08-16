@@ -10,21 +10,22 @@ jobs:
     runs-on: self-hosted
     
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Create .env file from GitHub Secrets
-      run: |
-        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
-        echo "API_URL=${{ secrets.API_URL }}" >> .env
-        echo "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}" >> .env
-        echo "CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}" >> .env
-        echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-        echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+      - name: Create .env file from GitHub Secrets
+        run: |
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
+          echo "API_URL=${{ secrets.API_URL }}" >> .env
+          echo "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}" >> .env
+          echo "CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "REFLEX_API_URL=${{ secrets.REFLEX_API_URL }}" >> .env
 
-    - name: Run Zero-Downtime Deployment Script
-      run: bash ./deploy.sh
-        
-    - name: Clean up old Docker images
-      run: docker image prune -af
+      - name: Run Zero-Downtime Deployment Script
+        run: bash ./deploy.sh
+
+      - name: Clean up old Docker images
+        run: docker image prune -af
