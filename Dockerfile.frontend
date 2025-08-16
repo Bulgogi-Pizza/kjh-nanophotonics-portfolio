@@ -6,12 +6,13 @@ ARG REFLEX_API_URL
 ENV REFLEX_API_URL=${REFLEX_API_URL}
 
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
 COPY . .
+RUN pip install -r requirements.txt
 RUN reflex export --frontend-only --no-zip
 
-FROM nginx:1.21-alpine
+FROM nginx
+
+CMD ls -a
 
 # 빌더 스테이지에서 생성된 정적 파일들을 Nginx의 기본 웹 루트로 복사
 COPY --from=builder /app/.web/build/client /usr/share/nginx/html

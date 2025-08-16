@@ -14,18 +14,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/ping" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    deploy:
-      replicas: 2
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: start-first
 
   frontend:
     build:
@@ -45,6 +33,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "3000:80"
     networks:
       - app-network
 
