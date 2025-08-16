@@ -7,6 +7,9 @@ services:
     restart: always
     networks:
       - app-network
+    depends_on:
+      db:
+        condition: service_healthy # db 서비스가 healthy 상태가 될 때까지 app 시작을 대기
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:3000" ]
       interval: 10s
@@ -33,6 +36,11 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     networks:
       - app-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   nginx:
     image: nginx:1.21-alpine
@@ -57,7 +65,7 @@ services:
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 volumes:
-  pgdata: {}
+  pgdata: { }
 
 networks:
   app-network:
