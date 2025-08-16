@@ -16,6 +16,7 @@ jobs:
       - name: Create .env file from GitHub Secrets
         run: |
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
+          echo "BUILD_DATABASE_URL=${{ secrets.BUILD_DATABASE_URL }}" >> .env
           echo "API_URL=${{ secrets.API_URL }}" >> .env
           echo "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}" >> .env
           echo "CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}" >> .env
