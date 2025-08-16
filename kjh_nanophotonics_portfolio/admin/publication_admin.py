@@ -3,6 +3,7 @@ import reflex as rx
 from ..layout import main_layout
 from ..state.publication_state import PublicationState as State
 
+
 @rx.page(route="/admin/add-publication", title="Add Publication")
 def add_publication_form() -> rx.Component:
     """새 논문을 추가하는 폼 페이지."""
@@ -26,14 +27,38 @@ def add_publication_form() -> rx.Component:
                         on_change=State.set_form_title,
                         width="100%",
                     ),
-                    rx.input(
-                        placeholder="Authors (e.g., A, B, C)",
-                        on_change=State.set_form_authors,
+                    rx.hstack(
+                        rx.input(
+                            placeholder="Authors (e.g., A, B, C)",
+                            on_change=State.set_form_authors,
+                            width="60%",
+                        ),
+                        rx.select(
+                            items=["First author", "Co-author",
+                                   "Corresponding author"],
+                            placeholder="Contribution",
+                            on_change=State.set_form_contribution,
+                            width="40%",
+                            position="popper",
+                        ),
                         width="100%",
                     ),
-                    rx.input(
-                        placeholder="Journal / Conference",
-                        on_change=State.set_form_journal,
+                    rx.hstack(
+                        rx.input(
+                            placeholder="Journal / Conference",
+                            on_change=State.set_form_journal,
+                            width="60%",
+                        ),
+                        rx.input(
+                            placeholder="Volume",
+                            on_change=State.set_form_volume,
+                            width="20%",
+                        ),
+                        rx.input(
+                            placeholder="Page",
+                            on_change=State.set_form_pages,
+                            width="20%",
+                        ),
                         width="100%",
                     ),
                     rx.input(
@@ -41,28 +66,9 @@ def add_publication_form() -> rx.Component:
                         on_change=State.set_form_publication_date,
                         width="100%",
                     ),
-                    rx.select.root(
-                        rx.select.trigger(placeholder="Select Research Area"),
-                        rx.select.content(
-                            rx.foreach(
-                                State.research_area_options,
-                                lambda option: rx.select.item(
-                                    option[0],  # 표시 이름
-                                    value=option[1],  # 값(문자열)
-                                ),
-                            )
-                        ),
-                        on_change=State.set_form_selected_research_area_id,
-                        width="100%",
-                    ),
                     rx.input(
                         placeholder="DOI (e.g., 10.1000/xyz)",
                         on_change=State.set_form_doi,
-                        width="100%",
-                    ),
-                    rx.text_area(
-                        placeholder="Abstract",
-                        on_change=State.set_form_abstract,
                         width="100%",
                     ),
                     rx.button(

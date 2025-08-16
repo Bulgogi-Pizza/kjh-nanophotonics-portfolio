@@ -1,50 +1,31 @@
-from sqlalchemy import Column, Text
 from datetime import date
-from typing import List, Optional
+from typing import Optional
 
-from sqlmodel import Field, Relationship, SQLModel
-
-
-class ResearchArea(SQLModel, table=True):
-  id: Optional[int] = Field(default=None, primary_key=True)
-  name: str = Field(unique=True, index=True)
-
-  # Publication과의 관계 설정 (역방향)
-  publications: List["Publication"] = Relationship(
-    back_populates="research_area")
+from sqlalchemy import Column, Text
+from sqlmodel import Field, SQLModel
 
 
 class Publication(SQLModel, table=True):
-  id: Optional[int] = Field(default=None, primary_key=True)
-  title: str = Field(index=True)
-  authors: str
-  journal: str
-  publication_date: date
+    id: Optional[int] = Field(default=None, primary_key=True)
+    title: str = Field(index=True)
+    authors: str
+    journal: str
+    publication_date: date
+    contribution: str
+    volume: Optional[str] = None
+    pages: Optional[str] = None
+    doi: Optional[str] = None
 
-  # 선택적 필드들
-  volume: Optional[str] = None
-  issue: Optional[str] = None
-  pages: Optional[str] = None
-  doi: Optional[str] = None
-  abstract: Optional[str] = None
-  image_url: Optional[str] = None  # 대표 이미지 URL
-  pdf_url: Optional[str] = None  # PDF 파일 링크 URL
-
-  research_area_id: Optional[int] = Field(default=None,
-                                          foreign_key="researcharea.id")
-
-  # 연구 분야 (나중에 별도 테이블로 분리할 수 있음)
-  research_area: Optional[ResearchArea] = Relationship(
-    back_populates="publications")
 
 class Media(SQLModel, table=True):
-  id: Optional[int] = Field(default=None, primary_key=True)
-  title: str = Field(index=True)
-  outlet: str
-  publication_date: date
-  url: str
-  image_url: Optional[str] = None
+    id: Optional[int] = Field(default=None, primary_key=True)
+    title: str = Field(index=True)
+    outlet: str
+    publication_date: date
+    url: str
+    image_url: Optional[str] = None
+
 
 class CVContent(SQLModel, table=True):
-  id: int = Field(default=1, primary_key=True)
-  content: str = Field(default="", sa_column=Column(Text))
+    id: int = Field(default=1, primary_key=True)
+    content: str = Field(default="", sa_column=Column(Text))

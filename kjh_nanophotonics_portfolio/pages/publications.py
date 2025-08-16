@@ -1,4 +1,4 @@
-from typing import Callable, cast
+from typing import Callable
 
 import reflex as rx
 
@@ -7,43 +7,72 @@ from ..models import Publication
 from ..state.publication_state import PublicationState as State
 
 
-def _area_filter_handler(area_id: int) -> Callable[[], None]:
-    """버튼 on_click에 넘길 제로-인자 콜백 생성기.
+def _year_filter_handler(year: int) -> Callable[[], None]:
+    handler = State.filter_publications_by_year
+    return lambda: handler(year)
 
-    Reflex 런타임이 State 인스턴스를 바인딩하지만, mypy는 이를 모름.
-    호출 지점만 예외 처리해 정적 타입 검사를 통과시킨다.
-    """
-    handler = cast("Callable[[int], None]", State.filter_publications_by_area)
-    return lambda: handler(area_id)
+
+def _contribution_filter_handler(contribution: str) -> Callable[[], None]:
+    handler = State.filter_publications_by_contribution
+    return lambda: handler(contribution)
+
 
 @rx.page(
     route="/publications",
     title="Publications",
-    on_load=State.load_publications_page,  # 콜백 참조만 전달
+    on_load=State.load_publications_page,
 )
 def publications() -> rx.Component:
     """데이터베이스에서 가져온 논문 목록을 보여주는 페이지."""
 
-    def publication_card(pub: Publication) -> rx.Component:
+    def publication_card(pub: Publication, index: int) -> rx.Component:
         return rx.box(
-            rx.vstack(
-                rx.heading(pub.title, size="5"),
-                rx.text(pub.authors, font_style="italic"),
-                rx.hstack(
-                    rx.text(f"{pub.journal},"),
-                    rx.text(str(pub.publication_date)),  # 문자열로 안전하게 표기
+            rx.hstack(
+                rx.text(
+                    f"{State.publications_count - index}",
+                    size="5",
+                    width="40px",
+                    text_align="center",
+                ),
+                rx.vstack(
+                    rx.heading(pub.title, size="4"),
+                    rx.text(pub.authors, font_style="italic",
+                            color_scheme="gray"),
+                    rx.hstack(
+                        rx.text(pub.journal, font_style="italic",
+                                font_weight="bold"),
+                        rx.text(
+                            f", {State.publication_year_month_map[pub.id]}"
+                        ),
+                        rx.cond(
+                            pub.volume,
+                            rx.hstack(
+                                rx.text(","),
+                                rx.text(pub.volume, font_weight="bold"),
+                                spacing="2",
+                            ),
+                        ),
+                        rx.cond(
+                            pub.pages,
+                            rx.text(f", pp. {pub.pages}"),
+                        ),
+                        spacing="2",
+                        align_items="center",
+                    ),
+                    rx.link(
+                        "DOI Link",
+                        href=f"https://doi.org/{pub.doi}",
+                        is_external=True,
+                        size="2",
+                    ),
                     spacing="2",
+                    align_items="start",
                 ),
-                rx.link(
-                    "DOI Link",
-                    href=f"https://doi.org/{pub.doi}",
-                    is_external=True,
-                ),
-                spacing="2",
-                align_items="start",
+                spacing="4",
+                align_items="center",
             ),
             border="1px solid #ddd",
-            padding="1em",
+            padding="1.5em",
             border_radius="8px",
             width="100%",
         )
@@ -54,21 +83,41 @@ def publications() -> rx.Component:
             rx.hstack(
                 rx.button(
                     "All",
-                    on_click=State.get_all_publications,  # 함수 참조만
+                    on_click=State.filter_all_contributions,  # 함수 참조만
                     size="2",
                 ),
                 rx.foreach(
-                    State.research_areas,
-                    lambda area: rx.button(
-                        area.name,
-                        on_click=_area_filter_handler(area.id),
+                    State.contributions,
+                    lambda contribution: rx.button(
+                        contribution,
+                        on_click=_contribution_filter_handler(contribution),
                         size="2",
                     ),
                 ),
                 spacing="3",
                 margin_bottom="2em",
             ),
-            rx.foreach(State.publications, publication_card),
+            rx.hstack(
+                rx.button(
+                    "All",
+                    on_click=State.filter_all_publication_years(),
+                    size="2",
+                ),
+                rx.foreach(
+                    State.publication_years,
+                    lambda year: rx.button(
+                        year,
+                        on_click=_year_filter_handler(year),
+                        size="2",
+                    ),
+                ),
+                spacing="3",
+                margin_bottom="2em",
+            ),
+            rx.foreach(
+                State.publications,
+                lambda pub, index: publication_card(pub, index)
+            ),
             spacing="5",
             width="100%",
             padding_top="10%",
