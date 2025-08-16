@@ -17,8 +17,11 @@ sleep 10 # 컨테이너 이름이 완전히 안정화될 때까지 잠시 대기
 RUNNING_CONTAINER_NAMES=$(docker inspect --format='{{.Name}}' $(docker compose ps -q app) | sed 's/^\///')
 
 # 최종 upstream 목록 생성
-UPSTREAM_CONFIG=$(echo "$RUNNING_CONTAINER_NAMES" | awk '{print "server " $1 ":3000;"}')
-echo "upstream reflex_app { ${UPSTREAM_CONFIG} }" > ./nginx/conf.d/upstream.conf
+UPSTREAM_FRONT_CONFIG=$(echo "$RUNNING_CONTAINER_NAMES" | awk '{print "server " $1 ":3000;"}')
+UPSTREAM_BACK_CONFIG=$(echo "$RUNNING_CONTAINER_NAMES" | awk '{print "server " $1 ":8000;"}')
+
+echo "upstream reflex_front { ${UPSTREAM_FRONT_CONFIG} }" > ./nginx/conf.d/upstream.conf
+echo "upstream reflex_back { ${UPSTREAM_BACK_CONFIG} }" > ./nginx/conf.d/upstream.conf
 
 # Nginx 설정 리로드
 docker compose exec nginx nginx -s reload
