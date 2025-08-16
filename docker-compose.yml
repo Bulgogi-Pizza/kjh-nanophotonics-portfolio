@@ -3,7 +3,7 @@ services:
     build:
       context: .
       args:
-        - DATABASE_URL=${DATABASE_URL}
+        - DATABASE_URL=${BUILD_DATABASE_URL}
         - REFLEX_API_URL=${REFLEX_API_URL}
     image: kjh-nanophotonics-portfolio-app
     env_file:
