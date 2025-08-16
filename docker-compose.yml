@@ -5,12 +5,18 @@ services:
       dockerfile: Dockerfile.backend
     image: kjh-nanophotonics-portfolio-backend
     restart: always
-    env_file: .env.prod
+    env_file: .env
     networks:
       - app-network
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     deploy:
       replicas: 2
       update_config:
