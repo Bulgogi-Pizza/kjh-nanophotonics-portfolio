@@ -5,12 +5,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class KjhPortfolioConfig(rx.Config):
-  pass
+    pass
+
 
 config = rx.Config(
     app_name="kjh_nanophotonics_portfolio",
     database_url=os.getenv("DATABASE_URL"),
+    api_url=os.getenv("API_URL"),
     plugins=[
         rx.plugins.SitemapPlugin(),
         rx.plugins.TailwindV4Plugin(),
