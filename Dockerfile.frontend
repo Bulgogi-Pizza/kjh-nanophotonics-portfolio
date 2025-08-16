@@ -1,6 +1,11 @@
 # 1단계: 빌더(Builder) 스테이지
 FROM python:3.12 AS builder
 
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
+ARG REFLEX_API_URL
+ENV REFLEX_API_URL=${REFLEX_API_URL}
+
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
