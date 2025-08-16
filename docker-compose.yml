@@ -32,7 +32,7 @@ services:
       context: .
       dockerfile: Dockerfile.frontend
       args:
-        - DATABASE_URL=${BUILD_DATABASE_URL}
+        - BUILD_DATABASE_URL=${BUILD_DATABASE_URL}
         - REFLEX_API_URL=${REFLEX_API_URL}
     image: kjh-nanophotonics-portfolio-frontend
     env_file:
