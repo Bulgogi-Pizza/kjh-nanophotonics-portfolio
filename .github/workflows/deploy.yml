@@ -25,8 +25,8 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "REFLEX_API_URL=${{ secrets.REFLEX_API_URL }}" >> .env
 
-      - name: Run Zero-Downtime Deployment Script
-        run: bash ./deploy.sh
+      - name: Build and Deploy Services
+        run: docker compose up -d --build --remove-orphans
 
       - name: Clean up old Docker images
         run: docker image prune -af
