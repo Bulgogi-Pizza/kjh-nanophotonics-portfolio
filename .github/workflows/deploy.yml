@@ -23,10 +23,9 @@ jobs:
           echo "DB_USER=${{ secrets.DB_USER }}" >> .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "REFLEX_API_URL=${{ secrets.REFLEX_API_URL }}" >> .env
-      - name: docker compose run
-        run: docker compose -f compose.yml up --build
-      #      - name: Run Zero-Downtime Deployment Script
-      #        run: bash ./deploy.sh
+
+      - name: Run Zero-Downtime Deployment Script
+        run: bash ./deploy.sh
 
       - name: Clean up old Docker images
         run: docker image prune -af
