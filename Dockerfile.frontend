@@ -1,0 +1,17 @@
+# 1단계: 빌더(Builder) 스테이지
+FROM python:3.12 AS builder
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+# --no-zip 옵션으로 정적 파일을 폴더 형태로 export
+RUN reflex export --frontend-only --no-zip
+
+# 2단계: 최종(Final) 스테이지
+FROM nginx:1.21-alpine
+
+# 빌더 스테이지에서 생성된 정적 파일들을 Nginx의 기본 웹 루트로 복사
+COPY --from=builder /app/.web/_static /usr/share/nginx/html
+# 우리가 직접 작성할 Nginx 설정 파일 복사
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
