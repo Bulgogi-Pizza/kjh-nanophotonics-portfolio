@@ -13,6 +13,7 @@ class KjhPortfolioConfig(rx.Config):
 config = rx.Config(
     app_name="kjh_nanophotonics_portfolio",
     database_url=os.getenv("DATABASE_URL"),
+    api_url=os.getenv("REFLEX_API_URL"),
     plugins=[
         rx.plugins.SitemapPlugin(),
         rx.plugins.TailwindV4Plugin(),
