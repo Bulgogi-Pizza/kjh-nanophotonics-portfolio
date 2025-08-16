@@ -7,14 +7,11 @@ ARG REFLEX_API_URL
 ENV REFLEX_API_URL=${REFLEX_API_URL}
 
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
 COPY . .
-# --no-zip 옵션으로 정적 파일을 폴더 형태로 export
+RUN pip install -r requirements.txt
 RUN reflex export --frontend-only --no-zip
 
-# 2단계: 최종(Final) 스테이지
-FROM nginx:1.21-alpine
+FROM nginx
 
 # 빌더 스테이지에서 생성된 정적 파일들을 Nginx의 기본 웹 루트로 복사
 COPY --from=builder /app/.web/_static /usr/share/nginx/html
