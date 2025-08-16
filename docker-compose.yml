@@ -9,7 +9,7 @@ services:
     env_file:
       - .env
     restart: always
-    command: bash -c "unzip backend.zip && uvicorn kjh_nanophotonics_portfolio.kjh_nanophotonics_portfolio:app --host 0.0.0.0 --port 8000"
+    command: bash -c "unzip -o backend.zip && uvicorn kjh_nanophotonics_portfolio.kjh_nanophotonics_portfolio:app --host 0.0.0.0 --port 8000"
     networks:
       - app-network
     depends_on:
