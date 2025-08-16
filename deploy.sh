@@ -21,7 +21,7 @@ UPSTREAM_FRONT_CONFIG=$(echo "$RUNNING_CONTAINER_NAMES" | awk '{print "server " 
 UPSTREAM_BACK_CONFIG=$(echo "$RUNNING_CONTAINER_NAMES" | awk '{print "server " $1 ":8000;"}')
 
 echo "upstream reflex_front { ${UPSTREAM_FRONT_CONFIG} }" > ./nginx/conf.d/upstream.conf
-echo "upstream reflex_back { ${UPSTREAM_BACK_CONFIG} }" > ./nginx/conf.d/upstream.conf
+echo "upstream reflex_back { ${UPSTREAM_BACK_CONFIG} }" >> ./nginx/conf.d/upstream.conf
 
 # Nginx 설정 리로드
 docker compose exec nginx nginx -s reload
